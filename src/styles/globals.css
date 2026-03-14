@@ -1,0 +1,148 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Variables ─────────────────────────────── */
+:root {
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-inter: 'Inter', system-ui, sans-serif;
+
+  --color-coral:      #C0392B;
+  --color-coral-dark: #A93226;
+  --color-teal:       #148F77;
+  --color-navy:       #0D1B2A;
+  --color-gold:       #D4AC0D;
+}
+
+/* ─── Base ──────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-dark text-white font-body antialiased;
+    font-family: var(--font-inter);
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: var(--font-playfair);
+  }
+
+  ::selection {
+    background-color: var(--color-coral);
+    color: white;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0D1B2A;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C0392B;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #E74C3C;
+  }
+}
+
+/* ─── Components ────────────────────────────────── */
+@layer components {
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-6 py-3 bg-brand-coral text-white
+           font-body font-semibold text-sm rounded-xl
+           hover:bg-red-700 active:scale-95
+           transition-all duration-200 shadow-glow;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 px-6 py-3
+           border border-white/20 text-white font-body font-medium text-sm
+           rounded-xl hover:bg-white/10 active:scale-95
+           transition-all duration-200 backdrop-blur-sm;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center gap-2 px-4 py-2 text-sm font-medium
+           text-white/70 hover:text-white hover:bg-white/5
+           rounded-lg transition-all duration-150;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-brand-navy-mid border border-white/10 rounded-2xl overflow-hidden
+           shadow-card hover:shadow-card-hover transition-all duration-300;
+  }
+
+  .card-glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3
+           text-white placeholder:text-white/40 font-body text-sm
+           focus:outline-none focus:border-brand-coral focus:bg-white/8
+           transition-all duration-200;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  .badge-coral  { @apply badge bg-brand-coral/20 text-brand-coral; }
+  .badge-teal   { @apply badge bg-brand-teal/20 text-brand-teal; }
+  .badge-gold   { @apply badge bg-brand-gold/20 text-brand-gold; }
+
+  /* Section headings */
+  .section-title {
+    @apply font-display text-4xl md:text-5xl font-bold text-white leading-tight;
+  }
+  .section-subtitle {
+    @apply font-body text-white/60 text-lg leading-relaxed;
+  }
+
+  /* Property price tag */
+  .price-tag {
+    @apply font-display text-2xl font-bold text-brand-gold;
+  }
+
+  /* Gradient text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-coral to-brand-gold;
+  }
+}
+
+/* ─── Utilities ─────────────────────────────────── */
+@layer utilities {
+  .animate-delay-100 { animation-delay: 100ms; }
+  .animate-delay-200 { animation-delay: 200ms; }
+  .animate-delay-300 { animation-delay: 300ms; }
+  .animate-delay-400 { animation-delay: 400ms; }
+  .animate-delay-500 { animation-delay: 500ms; }
+
+  .text-balance { text-wrap: balance; }
+
+  /* Glassmorphism */
+  .glass {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.10);
+  }
+
+  /* 3D card tilt base */
+  .tilt-card {
+    transform-style: preserve-3d;
+    transform: perspective(1000px);
+    transition: transform 0.3s ease;
+  }
+}
