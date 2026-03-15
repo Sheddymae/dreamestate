@@ -57,7 +57,7 @@ export default async function SavedPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {saved.map((property) => (
-                <PropertyCard key={property.id} property={property as Parameters<typeof PropertyCard>[0]['property']} />
+                <PropertyCard key={property.id} property={property as unknown as Parameters<typeof PropertyCard>[0]["property"]} />
               ))}
             </div>
           )}
@@ -67,3 +67,4 @@ export default async function SavedPage() {
     </main>
   )
 }
+
