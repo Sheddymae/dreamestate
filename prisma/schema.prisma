@@ -1,0 +1,249 @@
+// ─────────────────────────────────────────────────────────────
+// DreamEstate — Prisma Schema
+// Run: npx prisma db push   (applies to your DB)
+//      npx prisma studio     (visual DB browser)
+// ─────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ─────────────────────────────────────────────────────
+enum UserRole {
+  BUYER
+  TENANT
+  SELLER
+  LANDLORD
+  ADMIN
+}
+
+enum PropertyType {
+  VILLA
+  HOUSE
+  APARTMENT
+  ROOM
+  COMMERCIAL
+  LAND
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum PropertyStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  SOLD
+  RENTED
+  ARCHIVED
+}
+
+enum EnquiryStatus {
+  OPEN
+  REPLIED
+  CLOSED
+}
+
+enum ViewingStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum TransactionType {
+  DEPOSIT
+  RENT_PAYMENT
+  PURCHASE
+  PLATFORM_FEE
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// ── User ──────────────────────────────────────────────────────
+model User {
+  id          String   @id @default(cuid())
+  clerkId     String   @unique          // Clerk user ID
+  email       String   @unique
+  fullName    String
+  avatarUrl   String?
+  phone       String?
+  role        UserRole @default(BUYER)
+  isVerified  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  properties    Property[]
+  enquiries     Enquiry[]      @relation("SenderEnquiries")
+  sentMessages  Message[]
+  viewingsAsRequester ViewingBooking[] @relation("RequesterViewings")
+  viewingsAsOwner     ViewingBooking[] @relation("OwnerViewings")
+  savedProperties     SavedProperty[]
+  paidTransactions    Transaction[]   @relation("PayerTransactions")
+  receivedTransactions Transaction[]  @relation("ReceiverTransactions")
+
+  @@map("users")
+}
+
+// ── Property ──────────────────────────────────────────────────
+model Property {
+  id           String         @id @default(cuid())
+  title        String
+  description  String
+  type         PropertyType
+  listingType  ListingType
+  status       PropertyStatus @default(DRAFT)
+  price        Decimal        @db.Decimal(14, 2)
+  currency     String         @default("KES")
+
+  // Location
+  address       String
+  city          String
+  country       String         @default("Kenya")
+  zipCode       String?
+  neighbourhood String?
+  lat           Float
+  lng           Float
+
+  // Features
+  bedrooms     Int     @default(0)
+  bathrooms    Int     @default(0)
+  floors       Int?
+  garages      Int     @default(0)
+  sqMeters     Decimal @db.Decimal(8, 1)
+  yearBuilt    Int?
+  furnished    Boolean @default(false)
+  petFriendly  Boolean @default(false)
+  amenities    String[]
+
+  // Media
+  images    String[]
+  videos    String[]
+  tourUrl   String?
+  floorPlan String?
+
+  // Meta
+  views      Int      @default(0)
+  favourites Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  ownerId      String
+  owner        User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  enquiries    Enquiry[]
+  viewings     ViewingBooking[]
+  savedBy      SavedProperty[]
+  transactions Transaction[]
+
+  @@index([city])
+  @@index([type])
+  @@index([listingType])
+  @@index([status])
+  @@index([price])
+  @@index([ownerId])
+  @@map("properties")
+}
+
+// ── Enquiry ───────────────────────────────────────────────────
+model Enquiry {
+  id         String        @id @default(cuid())
+  message    String
+  status     EnquiryStatus @default(OPEN)
+  createdAt  DateTime      @default(now())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  senderId   String
+  sender     User     @relation("SenderEnquiries", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("enquiries")
+}
+
+// ── Conversation & Messages ───────────────────────────────────
+model Conversation {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  messages     Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  content        String
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+// ── Viewing Bookings ──────────────────────────────────────────
+model ViewingBooking {
+  id          String        @id @default(cuid())
+  scheduledAt DateTime
+  status      ViewingStatus @default(REQUESTED)
+  notes       String?
+  createdAt   DateTime      @default(now())
+
+  propertyId  String
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  requesterId String
+  requester   User     @relation("RequesterViewings", fields: [requesterId], references: [id])
+  ownerId     String
+  owner       User     @relation("OwnerViewings", fields: [ownerId], references: [id])
+
+  @@map("viewing_bookings")
+}
+
+// ── Saved Properties ──────────────────────────────────────────
+model SavedProperty {
+  savedAt DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@id([userId, propertyId])
+  @@map("saved_properties")
+}
+
+// ── Transactions ──────────────────────────────────────────────
+model Transaction {
+  id         String            @id @default(cuid())
+  amount     Decimal           @db.Decimal(14, 2)
+  currency   String            @default("KES")
+  type       TransactionType
+  status     TransactionStatus @default(PENDING)
+  stripeRef  String?
+  createdAt  DateTime          @default(now())
+
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id])
+  payerId    String
+  payer      User     @relation("PayerTransactions", fields: [payerId], references: [id])
+  receiverId String
+  receiver   User     @relation("ReceiverTransactions", fields: [receiverId], references: [id])
+
+  @@map("transactions")
+}
+
