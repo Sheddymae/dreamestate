@@ -44,7 +44,6 @@ export default function MapboxMap({
     const initMap = async () => {
       try {
         mapboxgl = (await import('mapbox-gl')).default as typeof import('mapbox-gl')
-        await import('mapbox-gl/dist/mapbox-gl.css')
 
         ;(mapboxgl as { accessToken: string }).accessToken = token
 
@@ -218,4 +217,5 @@ export default function MapboxMap({
     </div>
   )
 }
+
 
