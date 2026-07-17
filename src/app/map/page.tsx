@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { MapPin } from 'lucide-react'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Property Map',
   description: 'Browse properties on an interactive map across Kenya.',
