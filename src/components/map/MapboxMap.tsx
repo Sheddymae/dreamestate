@@ -38,16 +38,13 @@ export default function MapboxMap({
   useEffect(() => {
     if (!token || !mapContainer.current) return
 
-    let map: unknown
-    let mapboxgl: typeof import('mapbox-gl')
-
     const initMap = async () => {
       try {
-        mapboxgl = (await import('mapbox-gl')).default as typeof import('mapbox-gl')
+        const mapboxgl = (await import('mapbox-gl')).default as any
 
         ;(mapboxgl as { accessToken: string }).accessToken = token
 
-        map = new (mapboxgl as { Map: new (opts: unknown) => unknown }).Map({
+        const map = new mapboxgl.Map({
           container: mapContainer.current!,
           style: 'mapbox://styles/mapbox/dark-v11',
           center,
@@ -55,13 +52,7 @@ export default function MapboxMap({
           attributionControl: false,
         })
 
-        const mapInstance = map as {
-          on: (event: string, cb: () => void) => void
-          addControl: (ctrl: unknown, pos: string) => void
-          remove: () => void
-        }
-
-        mapInstance.on('load', () => {
+        map.on('load', () => {
           setLoading(false)
           setMapboxReady(true)
 
@@ -98,9 +89,9 @@ export default function MapboxMap({
             })
             el.addEventListener('click', () => setSelected(prop))
 
-            new (mapboxgl as unknown as { Marker: new (opts: unknown) => { setLngLat: (c: [number, number]) => { addTo: (m: unknown) => void } } }).Marker({ element: el })
+            new mapboxgl.Marker({ element: el })
               .setLngLat([prop.lng, prop.lat])
-              .addTo(map!)
+              .addTo(map)
           })
         })
 
@@ -114,7 +105,7 @@ export default function MapboxMap({
     initMap()
 
     return () => {
-      try { (map as { remove?: () => void })?.remove?.() } catch {}
+      try { (mapRef.current as any)?.remove?.() } catch {}
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token])

@@ -39,3 +39,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# clerk configuration (can include secrets)
+/.clerk/

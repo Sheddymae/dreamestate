@@ -8,6 +8,11 @@ import UserTypesSection from '@/components/home/UserTypesSection'
 import CTASection from '@/components/home/CTASection'
 import Footer from '@/components/layout/Footer'
 
+export const metadata = {
+  title: 'Home | DreamEstate',
+  description: 'Find your dream property with DreamEstate. Browse villas, houses, apartments, and more across Kenya.',
+}
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-brand-navy overflow-x-hidden">
