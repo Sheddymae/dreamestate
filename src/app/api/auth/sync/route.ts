@@ -14,8 +14,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const body = await req.json().catch(() => ({}))
-    const role = body.role ?? 'BUYER'
+    const body: unknown = await req.json().catch(() => ({}))
+    const requestedRole =
+      body && typeof body === 'object' && 'role' in body
+        ? (body as { role?: unknown }).role
+        : undefined
+    const allowedRoles = ['BUYER', 'TENANT', 'SELLER', 'LANDLORD'] as const
+    const role =
+      typeof requestedRole === 'string' &&
+      allowedRoles.includes(requestedRole as (typeof allowedRoles)[number])
+        ? requestedRole
+        : 'BUYER'
 
     const email     = clerkUser.emailAddresses[0]?.emailAddress ?? `${userId}@dreamestate.co.ke`
     const firstName = clerkUser.firstName ?? ''
