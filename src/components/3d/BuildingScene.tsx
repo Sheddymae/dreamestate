@@ -104,7 +104,7 @@ export default function BuildingScene() {
       scene.add(building)
 
       // Floating spheres
-      const spheres: THREE.Mesh[] = []
+      const spheres: import('three').Mesh[] = []
       const spherePositions: [number, number, number][] = [
         [-2.5, 1.0, -1.2], [2.8, 1.5, -0.8], [-2.0, -0.5, 1.5],
         [2.2, -1.0, 0.8],  [0.5, 3.5, -1.8],
