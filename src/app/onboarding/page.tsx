@@ -12,28 +12,48 @@ const ROLES = [
     icon: Home,
     title: 'Buyer',
     description: 'I want to purchase a property',
-    color: 'brand-coral',
+    borderClass: 'border-brand-coral',
+    selectedBgClass: 'bg-brand-coral/10',
+    iconBgClass: 'bg-brand-coral/15',
+    iconBorderClass: 'border-brand-coral/20',
+    iconTextClass: 'text-brand-coral',
+    selectedTextClass: 'text-brand-coral',
   },
   {
     id: 'TENANT',
     icon: Key,
     title: 'Tenant',
     description: 'I am looking to rent a property',
-    color: 'brand-teal',
+    borderClass: 'border-brand-teal',
+    selectedBgClass: 'bg-brand-teal/10',
+    iconBgClass: 'bg-brand-teal/15',
+    iconBorderClass: 'border-brand-teal/20',
+    iconTextClass: 'text-brand-teal',
+    selectedTextClass: 'text-brand-teal',
   },
   {
     id: 'SELLER',
     icon: FileText,
     title: 'Seller',
     description: 'I want to sell my property',
-    color: 'brand-gold',
+    borderClass: 'border-brand-gold',
+    selectedBgClass: 'bg-brand-gold/10',
+    iconBgClass: 'bg-brand-gold/15',
+    iconBorderClass: 'border-brand-gold/20',
+    iconTextClass: 'text-brand-gold',
+    selectedTextClass: 'text-brand-gold',
   },
   {
     id: 'LANDLORD',
     icon: Building2,
     title: 'Landlord',
     description: 'I want to list properties for rent',
-    color: 'brand-coral',
+    borderClass: 'border-brand-coral',
+    selectedBgClass: 'bg-brand-coral/10',
+    iconBgClass: 'bg-brand-coral/15',
+    iconBorderClass: 'border-brand-coral/20',
+    iconTextClass: 'text-brand-coral',
+    selectedTextClass: 'text-brand-coral',
   },
 ]
 
@@ -99,23 +119,25 @@ export default function OnboardingPage() {
                   'card-glass rounded-2xl p-6 text-left transition-all duration-200 group',
                   'border hover:border-white/20',
                   isSelected
-                    ? `border-${role.color} bg-${role.color}/10 shadow-glow`
+                    ? `${role.borderClass} ${role.selectedBgClass} shadow-glow`
                     : 'border-white/10'
                 )}
               >
                 <div className={cn(
                   'w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform',
-                  `bg-${role.color}/15 border border-${role.color}/20`,
+                  role.iconBgClass,
+                  'border',
+                  role.iconBorderClass,
                   'group-hover:scale-110'
                 )}>
-                  <Icon size={22} className={`text-${role.color}`} />
+                  <Icon size={22} className={role.iconTextClass} />
                 </div>
                 <h3 className="font-display text-lg font-bold text-white mb-1">{role.title}</h3>
                 <p className="font-body text-sm text-white/50">{role.description}</p>
 
                 {/* Selected tick */}
                 {isSelected && (
-                  <div className={`mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-${role.color}`}>
+                  <div className={cn('mt-3 inline-flex items-center gap-1.5 text-xs font-medium', role.selectedTextClass)}>
                     <div className="w-4 h-4 rounded-full bg-current/20 flex items-center justify-center">
                       <div className="w-2 h-2 rounded-full bg-current" />
                     </div>
