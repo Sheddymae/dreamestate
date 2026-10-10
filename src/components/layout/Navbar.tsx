@@ -67,7 +67,6 @@ export default function Navbar() {
                 </Link>
                 <Link href="/dashboard" className="btn-ghost text-sm">Dashboard</Link>
                 <UserButton
-                  afterSignOutUrl="/"
                   appearance={{
                     elements: {
                       avatarBox: 'w-9 h-9 ring-2 ring-brand-coral/30 hover:ring-brand-coral transition-all',
@@ -116,7 +115,7 @@ export default function Navbar() {
                 <Link href="/dashboard" className="btn-secondary text-sm justify-center">Dashboard</Link>
                 <Link href="/list-property" className="btn-primary text-sm justify-center">List Property</Link>
                 <div className="flex justify-center pt-2">
-                  <UserButton afterSignOutUrl="/" />
+                  <UserButton />
                 </div>
               </>
             )}
