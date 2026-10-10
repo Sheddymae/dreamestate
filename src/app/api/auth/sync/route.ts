@@ -20,10 +20,10 @@ export async function POST(req: Request) {
         ? (body as { role?: unknown }).role
         : undefined
     const allowedRoles = ['BUYER', 'TENANT', 'SELLER', 'LANDLORD'] as const
-    const role =
+    const role: (typeof allowedRoles)[number] =
       typeof requestedRole === 'string' &&
       allowedRoles.includes(requestedRole as (typeof allowedRoles)[number])
-        ? requestedRole
+        ? (requestedRole as (typeof allowedRoles)[number])
         : 'BUYER'
 
     const email     = clerkUser.emailAddresses[0]?.emailAddress ?? `${userId}@dreamestate.co.ke`
