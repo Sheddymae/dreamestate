@@ -39,11 +39,11 @@ export default function MapboxMap({
     if (!token || !mapContainer.current) return
 
     let map: unknown
-    let mapboxgl: typeof import('mapbox-gl')
+    let mapboxgl: typeof import('mapbox-gl').default
 
     const initMap = async () => {
       try {
-        mapboxgl = (await import('mapbox-gl')).default as typeof import('mapbox-gl')
+        mapboxgl = (await import('mapbox-gl')).default
 
         ;(mapboxgl as { accessToken: string }).accessToken = token
 
