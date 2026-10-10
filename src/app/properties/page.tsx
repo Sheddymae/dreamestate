@@ -1,6 +1,7 @@
 import Navbar from "@/components/layout/Navbar"
 import Footer from "@/components/layout/Footer"
 import prisma from "@/lib/prisma"
+import type { Prisma } from "@prisma/client"
 import Link from "next/link"
 import { Search, SlidersHorizontal } from "lucide-react"
 import { formatPrice, PROPERTY_TYPES, CITIES } from "@/constants"
@@ -13,13 +14,23 @@ const VALID_LISTINGS = ["SALE","RENT"]
 export default async function PropertiesPage({ searchParams }: { searchParams: Promise<Record<string,string>> }) {
   const sp = await searchParams
 
-  const where: Record<string, unknown> = { status: "ACTIVE" }
+  const where: Prisma.PropertyWhereInput = { status: "ACTIVE" }
   const listingUpper = sp.listing?.toUpperCase()
   const typeUpper    = sp.type?.toUpperCase()
 
   if (listingUpper && VALID_LISTINGS.includes(listingUpper)) where.listingType = listingUpper
   if (typeUpper    && VALID_TYPES.includes(typeUpper))       where.type        = typeUpper
   if (sp.city) where.city = { contains: sp.city, mode: "insensitive" }
+  const query = sp.q?.trim()
+  if (query) {
+    where.OR = [
+      { title: { contains: query, mode: "insensitive" } },
+      { description: { contains: query, mode: "insensitive" } },
+      { city: { contains: query, mode: "insensitive" } },
+      { neighbourhood: { contains: query, mode: "insensitive" } },
+      { address: { contains: query, mode: "insensitive" } },
+    ]
+  }
 
   const sort    = sp.sort ?? "newest"
   const orderBy =
@@ -44,7 +55,7 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
 
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
-              <h1 className="font-display text-4xl font-bold text-white">Properties</h1>
+              <h1 className="font-display text-4xl font-bold text-white">{query ? `Search results for: ${query}` : "Properties"}</h1>
               <p className="font-body text-white/40 text-sm mt-1">{total} listings found</p>
             </div>
             <form method="GET" className="flex flex-wrap gap-2 items-center">
