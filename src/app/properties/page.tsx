@@ -19,10 +19,10 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
   const typeUpper = sp.type?.toUpperCase()
 
   if (listingUpper && VALID_LISTINGS.includes(listingUpper)) {
-    where.listingType = listingUpper as Prisma.ListingType
+    where.listingType = listingUpper as "SALE" | "RENT"
   }
   if (typeUpper && VALID_TYPES.includes(typeUpper)) {
-    where.type = typeUpper as Prisma.PropertyType
+    where.type = typeUpper as "VILLA" | "HOUSE" | "APARTMENT" | "ROOM" | "COMMERCIAL" | "LAND"
   }
   if (sp.city) where.city = { contains: sp.city, mode: "insensitive" }
   const query = sp.q?.trim()
