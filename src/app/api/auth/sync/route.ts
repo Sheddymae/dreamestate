@@ -32,9 +32,15 @@ export async function POST(req: Request) {
     const fullName  = `${firstName} ${lastName}`.trim() || 'DreamEstate User'
     const avatarUrl = clerkUser.imageUrl ?? undefined
 
+    const existingUser = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      select: { role: true },
+    })
+    const safeRole = existingUser?.role === 'ADMIN' ? 'ADMIN' : role
+
     const user = await prisma.user.upsert({
       where:  { clerkId: userId },
-      update: { role, fullName, avatarUrl, email },
+      update: { role: safeRole, fullName, avatarUrl, email },
       create: { clerkId: userId, email, fullName, avatarUrl, role },
     })
 
