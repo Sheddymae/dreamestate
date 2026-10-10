@@ -8,18 +8,22 @@ import { formatPrice, PROPERTY_TYPES, CITIES } from "@/constants"
 
 export const metadata = { title: "Browse Properties" }
 
-const VALID_TYPES = ["VILLA","HOUSE","APARTMENT","ROOM","COMMERCIAL","LAND"]
-const VALID_LISTINGS = ["SALE","RENT"]
+const VALID_TYPES = ["VILLA", "HOUSE", "APARTMENT", "ROOM", "COMMERCIAL", "LAND"]
+const VALID_LISTINGS = ["SALE", "RENT"]
 
-export default async function PropertiesPage({ searchParams }: { searchParams: Promise<Record<string,string>> }) {
+export default async function PropertiesPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {
   const sp = await searchParams
 
   const where: Prisma.PropertyWhereInput = { status: "ACTIVE" }
   const listingUpper = sp.listing?.toUpperCase()
-  const typeUpper    = sp.type?.toUpperCase()
+  const typeUpper = sp.type?.toUpperCase()
 
-  if (listingUpper && VALID_LISTINGS.includes(listingUpper)) where.listingType = listingUpper
-  if (typeUpper    && VALID_TYPES.includes(typeUpper))       where.type        = typeUpper
+  if (listingUpper && VALID_LISTINGS.includes(listingUpper)) {
+    where.listingType = listingUpper as Prisma.ListingType
+  }
+  if (typeUpper && VALID_TYPES.includes(typeUpper)) {
+    where.type = typeUpper as Prisma.PropertyType
+  }
   if (sp.city) where.city = { contains: sp.city, mode: "insensitive" }
   const query = sp.q?.trim()
   if (query) {
@@ -32,12 +36,12 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
     ]
   }
 
-  const sort    = sp.sort ?? "newest"
+  const sort = sp.sort ?? "newest"
   const orderBy =
-    sort === "price_asc"  ? { price: "asc"  as const } :
+    sort === "price_asc" ? { price: "asc" as const } :
     sort === "price_desc" ? { price: "desc" as const } :
-    sort === "popular"    ? { views: "desc" as const } :
-                            { createdAt: "desc" as const }
+    sort === "popular" ? { views: "desc" as const } :
+    { createdAt: "desc" as const }
 
   const [properties, total] = await Promise.all([
     prisma.property.findMany({
@@ -52,7 +56,6 @@ export default async function PropertiesPage({ searchParams }: { searchParams: P
       <Navbar />
       <div className="pt-28 pb-24 px-4">
         <div className="max-w-7xl mx-auto">
-
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
             <div>
               <h1 className="font-display text-4xl font-bold text-white">{query ? `Search results for: ${query}` : "Properties"}</h1>
